@@ -1,0 +1,28 @@
+html {
+    font-family: Calibri, Arial, Helvetica, sans-serif;
+}
+
+header {
+    padding-bottom: 1.5em; 
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+label {
+    padding-right: 0.4em;
+}
+
+.grid {
+    display: inline-grid;
+    grid-template-columns: auto auto auto;
+}
+
+.label {
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+
+.input {
+    grid-column-start: 3;
+    grid-column-end: 5;
+}
