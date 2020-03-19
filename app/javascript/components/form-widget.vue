@@ -1,5 +1,5 @@
 <template>
-	<div v-if="$apolloData.queries.data.loading == false" class="form-widget">
+	<div id="container" v-if="$apolloData.queries.data.loading == false" class="form-widget">
 		<DxForm
 			id="form"
 			:form-data="data.employee"
@@ -30,8 +30,11 @@
 					data-field="notes"
 					editor-type="dxTextArea"
 				/>
+				
 			</DxGroupItem>
+			
 		</DxForm>
+		<button id="updateButton" @click="buttonClicked">Update</button>
 	</div>
 	<div v-else>
 		<DxLoadIndicator
@@ -92,7 +95,6 @@
 				employee: [],
 				notesOptions: { height: 90 }, // make the notes element bigger
 				showIndicator: false,
-				emp: null,
 			};
 		},
 
@@ -125,10 +127,52 @@
 				
 			}
 		},
+
+		methods:
+		{
+			buttonClicked() {
+				console.log("clicked \n" + this.data.employee.name);
+				var id = this.data.employee.id;
+				var name = this.data.employee.name;
+				var description = this.data.employee.description;
+				var balance = this.data.employee.balance;
+				var notes = this.data.employee.notes;
+				
+
+				this.$apollo.mutate({
+					mutation: gql`
+						mutation update ($id: Int!, $name: String!, $description: String!,
+						$balance: money!, $notes: String!) {
+							update_data(where: {id: {_eq: $id}}, _set: {name: $name, 
+							description: $description, balance: $balance, notes: $notes}) {
+								returning {
+									id
+									name
+									description
+									balance
+									notes
+								}
+							}
+						}`,
+					variables: {
+						id: id,
+						name: name,
+						description: description,
+						balance: balance,
+						notes: notes,
+					},
+				})
+			}
+		}
 	};
 </script>
 
 <style>
+
+html {
+	font-family: calibri;
+}
+
 .formGroup {
 	background-color: rgba(191, 191, 191, 0.15);
 	border: 2px solid #d2d3d5;
@@ -141,7 +185,22 @@
 .dx-widget {
 	display: inline-block;
 	width: 100%;
-	
+}
+
+#container {
+	overflow: auto;
+}
+
+button {
+	padding-left: 7px;
+	padding-right: 7px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	margin-top: 0.2em;	
+	float: right;
+	border-radius: 5px;
+	background-color: rgba(191, 191, 191, 0.15);
+	border: 2px solid #d2d3d5;
 }
 
 .form-widget {

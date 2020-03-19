@@ -16,16 +16,16 @@
         @selection-changed="onSelectionChanged"
     >
 
-        <DxGroupPanel :visible="true"/>
-        <DxSearchPanel
-        :visible="true"
-        :highlight-case-sensitive="true"
-        />
-        <DxGrouping :auto-expand-all="false"/>
-        <DxPager
-        :show-page-size-selector="true"
-        />
-        <DxPaging :page-size="10"/>
+    <DxGroupPanel :visible="true"/>
+    <DxSearchPanel
+    :visible="true"
+    :highlight-case-sensitive="true"
+    />
+    <DxGrouping :auto-expand-all="false"/>
+    <DxPager
+    :show-page-size-selector="true"
+    />
+    <DxPaging :page-size="10"/>
     </DxDataGrid>
     </div>
  </div>
