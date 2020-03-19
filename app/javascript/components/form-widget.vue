@@ -121,8 +121,7 @@
 					},
 				}).then((response) =>
 					this.data.employee = response.data.data[0] // update employee
-				)
-				
+				)	
 			}
 		},
 
@@ -135,7 +134,6 @@
 				var description = this.data.employee.description;
 				var balance = this.data.employee.balance;
 				var notes = this.data.employee.notes;
-				
 
 				this.$apollo.mutate({
 					mutation: gql`
