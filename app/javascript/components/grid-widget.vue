@@ -4,29 +4,29 @@
     <form-widget :mKey="myKey"></form-widget>
 
     <div v-if="$apolloData.queries.data.loading == false">
-    <DxDataGrid
-        :data-source="data.employees"
-        :columns="columns"
-        :remote-operations="false"
-        :allow-column-reordering="true"
-        :row-alternation-enabled="true"
-        :show-borders="true"
-        :hover-state-enabled="true"
-        :selection="{ mode: 'single' }"
-        @selection-changed="onSelectionChanged"
-    >
+        <DxDataGrid
+            :data-source="data.employees"
+            :columns="columns"
+            :remote-operations="false"
+            :allow-column-reordering="true"
+            :row-alternation-enabled="true"
+            :show-borders="true"
+            :hover-state-enabled="true"
+            :selection="{ mode: 'single' }"
+            @selection-changed="onSelectionChanged"
+        >
 
-    <DxGroupPanel :visible="true"/>
-    <DxSearchPanel
-    :visible="true"
-    :highlight-case-sensitive="true"
-    />
-    <DxGrouping :auto-expand-all="false"/>
-    <DxPager
-    :show-page-size-selector="true"
-    />
-    <DxPaging :page-size="10"/>
-    </DxDataGrid>
+        <DxGroupPanel :visible="true"/>
+        <DxSearchPanel
+        :visible="true"
+        :highlight-case-sensitive="true"
+        />
+        <DxGrouping :auto-expand-all="false"/>
+        <DxPager
+        :show-page-size-selector="true"
+        />
+        <DxPaging :page-size="10"/>
+        </DxDataGrid>
     </div>
  </div>
 </template>
@@ -47,7 +47,7 @@
     import 'devextreme/data/odata/store';
     import gql from 'graphql-tag'
 
-    import formwidget from './form-widget.vue'
+    import formwidget from './form-widget.vue';
 
     let collapsed = false;
 

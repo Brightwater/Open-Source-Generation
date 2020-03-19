@@ -10,7 +10,6 @@
 			<DxGroupItem
 				css-class="formGroup"
 			>
-				
 				<DxSimpleItem
 					data-field="id"
 					:is-required="true"
@@ -30,7 +29,6 @@
 					data-field="notes"
 					editor-type="dxTextArea"
 				/>
-				
 			</DxGroupItem>
 			
 		</DxForm>
@@ -100,7 +98,7 @@
 
 		props: ['mKey'],
 
-		watch : {
+		watch: {
 			// wait for mKey to be updated
 			mKey: function () {
 				var data;

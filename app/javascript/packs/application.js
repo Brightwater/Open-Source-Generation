@@ -47,7 +47,6 @@ const apolloProvider = new VueApollo({
   defaultClient: client,
 });
 
-
 document.addEventListener('DOMContentLoaded', () => {
   const app = new Vue({
     //el: "#app",
