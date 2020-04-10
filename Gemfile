@@ -27,7 +27,6 @@ gem 'rack-cors', :require => 'rack/cors'
 
 gem 'foreman'
 
-
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 

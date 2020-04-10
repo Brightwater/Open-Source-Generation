@@ -47,7 +47,7 @@
     import 'devextreme/data/odata/store';
     import gql from 'graphql-tag'
 
-    import formwidget from './form-widget.vue';
+    import formwidget from './form-widget-render.vue';
 
     let collapsed = false;
 
@@ -66,19 +66,19 @@
                 data: {
                     query: gql`
                         query {
-                            data {
+                            employee {
                                 id
-                                name
-                                description
-                                balance
-                                notes
+								name
+								payrate
+								dateHired
+								
                             }
                         }`,
 
                     update (data) {
-                        console.log(data.data)
+                        console.log(data.employee)
                         return {
-                            employees: data.data,
+                            employees: data.employee,
                         }
                     },
                 },
@@ -88,7 +88,7 @@
         {
                 return {
                     employees: [],
-                    columns: ["id", "name", "description", "balance", "notes"],
+                    columns: ["id", "name", "payrate", "dateHired"],
                     showEmployeeInfo: false,
                     myKey: null,
             };

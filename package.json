@@ -13,7 +13,7 @@
     "apollo-link-http": "^1.5.16",
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.6.1",
-    "devextreme": "19.2.6",
+    "devextreme": "^19.2.7",
     "devextreme-vue": "19.2.6",
     "graphql": "^14.6.0",
     "turbolinks": "^5.2.0",
@@ -27,6 +27,7 @@
     "globalize": "^1.4.2",
     "graphql-tag": "^2.10.3",
     "hasura-cli": "^1.1.0",
+    "html-webpack-plugin": "^4.0.3",
     "vue-cli-plugin-apollo": "^0.21.3",
     "webpack-dev-server": "^3.10.3"
   }

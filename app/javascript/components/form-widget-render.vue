@@ -1,38 +1,43 @@
 <template>
 	<div id="container" v-if="$apolloData.queries.data.loading == false" class="form-widget">
-		<DxForm
-			id="form"
-			:form-data="data.employee"
-			
-			label-location="top"
-			>
+		<div class="inner-form-widget">
+			<DxForm
+				id="form"
+				:form-data="data.employee"
+				
+				label-location="top"
+				>
 
-			<DxGroupItem
-				css-class="formGroup"
-			>
-				<DxSimpleItem
-					data-field="id"
-					:is-required="true"
-				/>
-				<DxSimpleItem
-					data-field="name"
-					:is-required="true"
-				/>
-				<DxSimpleItem
-					data-field="description"
-				/>
-				<DxSimpleItem
-					data-field="balance"
-				/>
-				<DxSimpleItem
-					:editor-options="notesOptions"
-					data-field="notes"
-					editor-type="dxTextArea"
-				/>
-			</DxGroupItem>
-			
-		</DxForm>
-		<button id="updateButton" @click="buttonClicked">Update</button>
+				<DxGroupItem
+					css-class="formGroup"
+				>
+					<DxSimpleItem
+						data-field="id"
+						:editor-type: 
+					/>
+					<DxSimpleItem
+						data-field="name"
+					/>
+					<DxSimpleItem
+						data-field="payrate"
+					/>
+					<DxSimpleItem
+						data-field="dateHired"
+					/>
+					
+					<dropdownbox-widget></dropdownbox-widget> 
+
+				</DxGroupItem>
+
+				
+				
+			</DxForm>
+			<br/>
+			<br/>
+			<div>Employee type:(hardcoded right now)</div>
+			<dropdownbox-widget></dropdownbox-widget>
+		</div>
+			<button id="updateButton" @click="buttonClicked">Update</button>
 	</div>
 	<div v-else>
 		<DxLoadIndicator
@@ -53,6 +58,7 @@
 		DxGroupItem
 	} from 'devextreme-vue/form';
 	
+	import dropdownbox from './dropdown-widget.vue';
 
 	export default 
 	{	
@@ -63,25 +69,26 @@
 			DxGroupItem,
 			DxTextArea,
 			DxLoadIndicator,
+			'dropdownbox-widget': dropdownbox,
 		},
 
 		apollo: {
             data: {
                 query: gql`
                     query {
-                        data {
+                        employee {
                             id
-                            name
-                            description
-                            balance
-                            notes
+								name
+								payrate
+								dateHired
+								
                         }
                     }`,
 
                 update (data) {
-                    console.log(data.data[0])
+                    console.log(data.employee[0])
                     return {
-						employee: data.data[0],
+						employee: data.employee[0],
                     }
                 },
             },
@@ -108,19 +115,19 @@
 				this.$apollo.query({
 					query: gql`
 						query lookup($queryid: Int!) {
-							data (where: {id: {_eq: $queryid}}) {
+							employee (where: {id: {_eq: $queryid}}) {
 								id
 								name
-								description
-								balance
-								notes
+								payrate
+								dateHired
+								
 							}
 						}`,
 					variables: {
 						queryid: queryid,
 					},
 				}).then((response) =>
-					this.data.employee = response.data.data[0] // update employee
+					this.data.employee = response.data.employee[0] // update employee
 				)	
 			}
 		},
@@ -128,35 +135,34 @@
 		methods:
 		{
 			buttonClicked() {
-				console.log("clicked \n" + this.data.employee.name);
+				console.log("clicked \n" + this.data.employee.id);
 				var id = this.data.employee.id;
 				var name = this.data.employee.name;
-				var description = this.data.employee.description;
-				var balance = this.data.employee.balance;
-				var notes = this.data.employee.notes;
-
+				var payrate = this.data.employee.payrate;
+				var dateHired = this.data.employee.dateHired;
+		
+																																																																																																																																											
+									
+				// this part will look a bit messy in the template because of graphql formatting
 				this.$apollo.mutate({
-					mutation: gql`
-						mutation update ($id: Int!, $name: String!, $description: String!,
-						$balance: money!, $notes: String!) {
-							update_data(where: {id: {_eq: $id}}, _set: {name: $name, 
-							description: $description, balance: $balance, notes: $notes}) {
+					mutation: gql` 
+						mutation update ($id: Int!, $name: String!, $payrate: money!, $dateHired: date!, ) {
+							update_employee(where: {id: {_eq: $id}}, _set: {name: $name, payrate: $payrate, dateHired: $dateHired, }) {
 								returning {
 									id
-									name
-									description
-									balance
-									notes
+								name
+								payrate
+								dateHired
+								   
 								}
 							}
 						}`,
 					variables: {
 						id: id,
 						name: name,
-						description: description,
-						balance: balance,
-						notes: notes,
-					},
+						payrate: payrate,
+						dateHired: dateHired,
+								},
 				})
 			}
 		}
@@ -169,12 +175,6 @@ html {
 	font-family: calibri;
 }
 
-.formGroup {
-	background-color: rgba(191, 191, 191, 0.15);
-	border: 2px solid #d2d3d5;
-	padding: 15px;
-	
-}
 </style>
 
 <style scoped>
@@ -197,6 +197,12 @@ button {
 	border-radius: 5px;
 	background-color: rgba(191, 191, 191, 0.15);
 	border: 2px solid #d2d3d5;
+}
+
+.inner-form-widget{
+	background-color: rgba(191, 191, 191, 0.15);
+	border: 2px solid #d2d3d5;
+	padding: 15px;
 }
 
 .form-widget {

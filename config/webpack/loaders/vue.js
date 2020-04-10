@@ -3,4 +3,5 @@ module.exports = {
   use: [{
     loader: 'vue-loader'
   }],
+
 }

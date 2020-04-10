@@ -1,0 +1,17 @@
+<template>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title><%= htmlWebpackPlugin.options.title %></title>
+        <test><%= htmlWebpackPlugin.options.test %></test>
+    </head>
+    <body>
+        <h2>This is my Index.html Template</h2>
+        <div id="app-container"></div>
+    </body>
+    </html>
+</template>
+
+<script>
+    var t = <%= htmlWebpackPlugin.options.t %>
+</script>

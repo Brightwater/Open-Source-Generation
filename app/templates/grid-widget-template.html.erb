@@ -66,19 +66,15 @@
                 data: {
                     query: gql`
                         query {
-                            data {
-                                id
-                                name
-                                description
-                                balance
-                                notes
+                            <%= htmlWebpackPlugin.options.tableName %> {
+                                <%= htmlWebpackPlugin.options.queryElements %>
                             }
                         }`,
 
                     update (data) {
-                        console.log(data.data)
+                        console.log(data.<%= htmlWebpackPlugin.options.tableName %>)
                         return {
-                            employees: data.data,
+                            employees: data.<%= htmlWebpackPlugin.options.tableName %>,
                         }
                     },
                 },
@@ -88,7 +84,7 @@
         {
                 return {
                     employees: [],
-                    columns: ["id", "name", "description", "balance", "notes"],
+                    columns: [<%= htmlWebpackPlugin.options.data %>],
                     showEmployeeInfo: false,
                     myKey: null,
             };

@@ -1,0 +1,10 @@
+grid:
+  # items are case-sensitive with database
+  tableName: employee
+  # first item listed is assumed to be primary key
+  # specify datatype like this id, int
+  columns:          
+    - [id, Int!,] 
+    - name, string
+    - payrate, money, simple
+    - dateHired, date
