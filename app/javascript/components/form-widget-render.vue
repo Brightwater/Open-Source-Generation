@@ -13,29 +13,29 @@
 				>
 					<DxSimpleItem
 						data-field="id"
-						:editor-type: 
-					/>
+						/>
 					<DxSimpleItem
 						data-field="name"
-					/>
+						editor-type="dxSelectBox"
+						v-if="dxSelectBoxOptions.dataSource[0]" != null
+							:editor-options="dxSelectBoxOptions"
+						/>
 					<DxSimpleItem
-						data-field="payrate"
-					/>
+						data-field="description"
+						/>
 					<DxSimpleItem
-						data-field="dateHired"
-					/>
-					
-					<dropdownbox-widget></dropdownbox-widget> 
-
+						data-field="balance"
+						/>
+					<DxSimpleItem
+						data-field="notes"
+						editor-type="dxTextArea"
+						v-if="dxSelectBoxOptions.dataSource[0]" != null
+							:editor-options="dxTextAreaOptions"
+						/>
+										
 				</DxGroupItem>
-
-				
-				
+	
 			</DxForm>
-			<br/>
-			<br/>
-			<div>Employee type:(hardcoded right now)</div>
-			<dropdownbox-widget></dropdownbox-widget>
 		</div>
 			<button id="updateButton" @click="buttonClicked">Update</button>
 	</div>
@@ -50,15 +50,14 @@
  
 <script>
 	import { DxTextArea } from 'devextreme-vue/text-area';
+	import { DxSelectBox } from 'devextreme-vue'
 	import { DxLoadIndicator} from 'devextreme-vue/load-indicator';
 	import gql from 'graphql-tag'
 	import DxForm,
 	{
 		DxSimpleItem,
-		DxGroupItem
+		DxGroupItem,
 	} from 'devextreme-vue/form';
-	
-	import dropdownbox from './dropdown-widget.vue';
 
 	export default 
 	{	
@@ -69,26 +68,28 @@
 			DxGroupItem,
 			DxTextArea,
 			DxLoadIndicator,
-			'dropdownbox-widget': dropdownbox,
+			DxSelectBox,
 		},
-
+		
 		apollo: {
             data: {
                 query: gql`
                     query {
-                        employee {
+                        data {
                             id
-								name
-								payrate
-								dateHired
-								
+name
+description
+balance
+notes
+
                         }
                     }`,
 
                 update (data) {
-                    console.log(data.employee[0])
-                    return {
-						employee: data.employee[0],
+					console.log(data.data[0])
+					
+					return {
+						employee: data.data[0],
                     }
                 },
             },
@@ -98,83 +99,108 @@
 		{
 			return {
 				employee: [],
-				notesOptions: { height: 90 }, // make the notes element bigger
+				dxTextAreaOptions: { height: 90 }, // make the notes element bigger
 				showIndicator: false,
+				selectBoxDataSource: null,
+				dxSelectBoxOptions: { dataSource: [null], acceptCustomValue: true},
 			};
 		},
 
-		props: ['mKey'],
+		props: {
+			mKey: {
+				default: 0
+			},
+		},
 
 		watch: {
 			// wait for mKey to be updated
 			mKey: function () {
-				var data;
-				var queryid = this.mKey;
-				
-				// manual query with variable queryid (mKey)
-				this.$apollo.query({
-					query: gql`
-						query lookup($queryid: Int!) {
-							employee (where: {id: {_eq: $queryid}}) {
-								id
-								name
-								payrate
-								dateHired
-								
-							}
-						}`,
-					variables: {
-						queryid: queryid,
-					},
-				}).then((response) =>
-					this.data.employee = response.data.employee[0] // update employee
-				)	
+				// don't update unless the parent wants it to
+				if (this.mKey != 0) {
+					console.log(this.mKey)
+					var data;
+					var queryid = this.mKey;
+					
+					// manual query with variable queryid (mKey)
+					this.$apollo.query({
+						query: gql`
+							query lookup($queryid: Int!) {
+								data (where: {id: {_eq: $queryid}}) {
+									id
+name
+description
+balance
+notes
+
+								}
+							}`,
+						variables: {
+							queryid: queryid,
+						},
+					}).then((response) =>
+						this.data.employee = response.data.data[0] // update employee
+					)	
+				}
 			}
 		},
 
 		methods:
 		{
 			buttonClicked() {
-				console.log("clicked \n" + this.data.employee.id);
-				var id = this.data.employee.id;
-				var name = this.data.employee.name;
-				var payrate = this.data.employee.payrate;
-				var dateHired = this.data.employee.dateHired;
-		
-																																																																																																																																											
-									
+
 				// this part will look a bit messy in the template because of graphql formatting
 				this.$apollo.mutate({
 					mutation: gql` 
-						mutation update ($id: Int!, $name: String!, $payrate: money!, $dateHired: date!, ) {
-							update_employee(where: {id: {_eq: $id}}, _set: {name: $name, payrate: $payrate, dateHired: $dateHired, }) {
+						mutation update ($id: Int!, $name: String!, $description: String!, $balance: money!, $notes: String!, ) {
+							update_data(where: {id: {_eq: $id}}, 
+							_set: {name: $name, description: $description, balance: $balance, notes: $notes, }) {
 								returning {
 									id
-								name
-								payrate
-								dateHired
-								   
+name
+description
+balance
+notes
+   
 								}
 							}
 						}`,
 					variables: {
-						id: id,
-						name: name,
-						payrate: payrate,
-						dateHired: dateHired,
+						id: this.data.employee.id,
+						name: this.data.employee.name,
+						description: this.data.employee.description,
+						balance: this.data.employee.balance,
+						notes: this.data.employee.notes,
 								},
 				})
 			}
-		}
+		},
+
+								
+		mounted()
+		{
+			this.$apollo.query({
+				query: gql`
+					query {
+						data (distinct_on: name) {
+							name
+						}
+					}`,
+				}).then((response) =>
+					this.dxSelectBoxOptions.dataSource = response.data.data.map(value => value.name) // update employee
+				)	
+			}
+				
 	};
+
+	
+	
 </script>
 
 <style>
-
 html {
-	font-family: calibri;
+	font-family: 'Helvetica Neue','Segoe UI', 'Helvetica', 'Verdana', 'sans-serif';
+	line-height: 1.35715;
 }
-
 </style>
 
 <style scoped>
@@ -185,6 +211,10 @@ html {
 
 #container {
 	overflow: auto;
+}
+
+.customlabel {
+	padding-top: 10px;
 }
 
 button {

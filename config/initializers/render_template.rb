@@ -2,30 +2,19 @@ require 'erb'
 require 'yaml'
 
 yaml_file = File.join(File.dirname(__FILE__), '..', '..', 'component-specs', 'grid.yaml')
-input = YAML.load_file(yaml_file)
+@input = YAML.load_file(yaml_file)
 
-colArr = input["grid"]["columns"]
-
-columns =  []               # columns in database
-queryElements = ""          # queryElements string from columns
-dataTypesofColumns = []     # datatypes of columns in database (needed for graphql mutations in form widget)
+colArr = @input["grid"]["columns"]
+@queryElements = ""          # queryElements string from columns
+@columns = []
 
 # loop through each column
-colArr.each { |item|
-    # format of each item: string, datatype
-    columns.append(item.split(',').first)                   # get string
-    queryElements.concat(item.split(',').first + "\n\t\t\t\t\t\t\t\t")  # append to queryElements string
-    dataTypesofColumns.append(item.split(',').last.strip)   # get datatype
+colArr.each_with_index { |col, index|
+    @queryElements.concat(@input["grid"]["columns"][index][0] + "\n")  # append to queryElements string
+    @columns.append(@input["grid"]["columns"][index][0])
 }
 
-# variables -> template
-@tableName = input["grid"]["tableName"]
-@queryElements = queryElements
-@columns = columns
-@dataTypes = dataTypesofColumns
-@primaryKey = input["grid"]["columns"][0].split(',').first
-
-
+#@primaryKey = input["grid"]["columns"][0].split(',').first
 grid_file = File.join(File.dirname(__FILE__), '..', '..', 'component-specs', 'grid-template.vue.erb')
 form_file = File.join(File.dirname(__FILE__), '..', '..', 'component-specs', 'form-template.vue.erb')
 

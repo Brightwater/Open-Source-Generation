@@ -66,15 +66,15 @@
                 data: {
                     query: gql`
                         query {
-                            <%= @tableName %> {
+                            <%= @input["grid"]["tableName"] %> {
                                 <%= @queryElements %>
                             }
                         }`,
 
                     update (data) {
-                        console.log(data.<%= @tableName %>)
+                        console.log(data.<%= @input["grid"]["tableName"] %>)
                         return {
-                            employees: data.<%= @tableName %>,
+                            employees: data.<%= @input["grid"]["tableName"] %>,
                         }
                     },
                 },
@@ -96,9 +96,9 @@
                 const data = selectedRowsData[0];
 
                 this.showEmployeeInfo = !!data;
-                this.selectedRowID = data && data.<%= @primaryKey %>;
+                this.selectedRowID = data && data.<%= @input["grid"]["columns"][0][0] %>;
                 
-                this.myKey = data && data.<%= @primaryKey %>;
+                this.myKey = data && data.<%= @input["grid"]["columns"][0][0] %>;
             }
         }
     };

@@ -1,10 +1,12 @@
 grid:
   # items are case-sensitive with database
-  tableName: employee
+  tableName: data
   # first item listed is assumed to be primary key
-  # specify datatype like this id, int
+  # specify columns like this [column name, data type, editor type] (editor type is optional)
+  # [employeeType, String!, dxSelectBox]
   columns:          
-    - [id, Int!,] 
-    - name, string
-    - payrate, money, simple
-    - dateHired, date
+    - [id, Int!] 
+    - [name, String!, dxSelectBox]
+    - [description, String!]
+    - [balance, money!]
+    - [notes, String!, dxTextArea]

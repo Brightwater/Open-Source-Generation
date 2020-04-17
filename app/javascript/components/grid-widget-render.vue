@@ -66,19 +66,20 @@
                 data: {
                     query: gql`
                         query {
-                            employee {
+                            data {
                                 id
-								name
-								payrate
-								dateHired
-								
+name
+description
+balance
+notes
+
                             }
                         }`,
 
                     update (data) {
-                        console.log(data.employee)
+                        console.log(data.data)
                         return {
-                            employees: data.employee,
+                            employees: data.data,
                         }
                     },
                 },
@@ -88,7 +89,7 @@
         {
                 return {
                     employees: [],
-                    columns: ["id", "name", "payrate", "dateHired"],
+                    columns: ["id", "name", "description", "balance", "notes"],
                     showEmployeeInfo: false,
                     myKey: null,
             };

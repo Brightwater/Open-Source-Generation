@@ -166,7 +166,8 @@
 <style>
 
 html {
-	font-family: calibri;
+	font-family: 'Helvetica Neue','Segoe UI', 'Helvetica', 'Verdana', 'sans-serif';
+	line-height: 1.35715;
 }
 
 .formGroup {

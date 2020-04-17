@@ -11,23 +11,18 @@
 				<DxGroupItem
 					css-class="formGroup"
 				>
-					<% @columns.each do |col| -%>
+					<% @input["grid"]["columns"].each_with_index do |col, index| -%>
 <DxSimpleItem
-						data-field="<%= col %>"
-					/>
+						data-field="<%= @input["grid"]["columns"][index][0] %>"
+						<% if(!@input["grid"]["columns"][index][2].nil?) -%>editor-type="<%= @input["grid"]["columns"][index][2] %>"
+						v-if="dxSelectBoxOptions.dataSource[0]" != null
+							:editor-options="<%= @input["grid"]["columns"][index][2] %>Options"
+						<% end -%>/>
 					<% end -%>
-
-					<dropdownbox-widget></dropdownbox-widget> 
-
+					
 				</DxGroupItem>
-
-				
-				
+	
 			</DxForm>
-			<br/>
-			<br/>
-			<div>Employee type:(hardcoded right now)</div>
-			<dropdownbox-widget></dropdownbox-widget>
 		</div>
 			<button id="updateButton" @click="buttonClicked">Update</button>
 	</div>
@@ -42,15 +37,14 @@
  
 <script>
 	import { DxTextArea } from 'devextreme-vue/text-area';
+	import { DxSelectBox } from 'devextreme-vue'
 	import { DxLoadIndicator} from 'devextreme-vue/load-indicator';
 	import gql from 'graphql-tag'
 	import DxForm,
 	{
 		DxSimpleItem,
-		DxGroupItem
+		DxGroupItem,
 	} from 'devextreme-vue/form';
-	
-	import dropdownbox from './dropdown-widget.vue';
 
 	export default 
 	{	
@@ -61,22 +55,23 @@
 			DxGroupItem,
 			DxTextArea,
 			DxLoadIndicator,
-			'dropdownbox-widget': dropdownbox,
+			DxSelectBox,
 		},
-
+		
 		apollo: {
             data: {
                 query: gql`
                     query {
-                        <%= @tableName %> {
+                        <%= @input["grid"]["tableName"] %> {
                             <%= @queryElements %>
                         }
                     }`,
 
                 update (data) {
-                    console.log(data.<%= @tableName %>[0])
-                    return {
-						employee: data.<%= @tableName %>[0],
+					console.log(data.<%= @input["grid"]["tableName"] %>[0])
+					
+					return {
+						employee: data.<%= @input["grid"]["tableName"] %>[0],
                     }
                 },
             },
@@ -86,64 +81,56 @@
 		{
 			return {
 				employee: [],
-				notesOptions: { height: 90 }, // make the notes element bigger
+				dxTextAreaOptions: { height: 90 }, // make the notes element bigger
 				showIndicator: false,
+				selectBoxDataSource: null,
+				dxSelectBoxOptions: { dataSource: [null], acceptCustomValue: true},
 			};
 		},
 
-		props: ['mKey'],
+		props: {
+			mKey: {
+				default: 0
+			},
+		},
 
 		watch: {
 			// wait for mKey to be updated
 			mKey: function () {
-				var data;
-				var queryid = this.mKey;
-				
-				// manual query with variable queryid (mKey)
-				this.$apollo.query({
-					query: gql`
-						query lookup($queryid: Int!) {
-							<%= @tableName %> (where: {<%= @primaryKey %>: {_eq: $queryid}}) {
-								<%= @queryElements %>
-							}
-						}`,
-					variables: {
-						queryid: queryid,
-					},
-				}).then((response) =>
-					this.data.employee = response.data.<%= @tableName %>[0] // update employee
-				)	
+				// don't update form unless the parent grid wants it to
+				if (this.mKey != 0) {
+					console.log(this.mKey)
+					var data;
+					var queryid = this.mKey;
+					
+					// manual query with variable queryid (mKey)
+					this.$apollo.query({
+						query: gql`
+							query lookup($queryid: Int!) {
+								<%= @input["grid"]["tableName"] %> (where: {<%= @input["grid"]["columns"][0][0] %>: {_eq: $queryid}}) {
+									<%= @queryElements %>
+								}
+							}`,
+						variables: {
+							queryid: queryid,
+						},
+					}).then((response) =>
+						this.data.employee = response.data.<%= @input["grid"]["tableName"] %>[0] // update employee
+					)	
+				}
 			}
 		},
 
 		methods:
 		{
 			buttonClicked() {
-				console.log("clicked \n" + this.data.employee.<%= @primaryKey %>);
-		<% @columns.each do |col| -%>
-		var <%= col %> = this.data.employee.<%= col %>;
-		<% end -%>
-
-				<% @dataTypes.each_with_index do |dataType,index| -%>
-					<% if dataType == "int" -%>
-						<% @dataTypes[index] = "Int!" -%>
-					<% end -%>
-					<% if dataType == "string" -%>
-						<% @dataTypes[index] = "String!" -%>
-					<% end -%>
-					<% if dataType == "money" -%>
-						<% @dataTypes[index] = "money!" -%>
-					<% end -%>
-					<% if dataType == "date" -%>
-						<% @dataTypes[index] = "date!" -%>				
-					<% end -%>
-				<% end -%>
 
 				// this part will look a bit messy in the template because of graphql formatting
 				this.$apollo.mutate({
 					mutation: gql` 
-						mutation update (<% @columns.each_with_index do |col,index| -%>$<%= col %>: <%= @dataTypes[index] %>, <% end -%>) {
-							update_<%= @tableName %>(where: {<%= @primaryKey %>: {_eq: $<%= @primaryKey %>}}, _set: {<% @columns.each do |col| -%><% if col != @primaryKey -%><%= col %>: $<%= col %>, <% end -%><% end -%>
+						mutation update (<% @input["grid"]["columns"].each_with_index do |col,index| -%>$<%= @input["grid"]["columns"][index][0] %>: <%= @input["grid"]["columns"][index][1] %>, <% end -%>) {
+							update_<%= @input["grid"]["tableName"] %>(where: {<%= @input["grid"]["columns"][0][0] %>: {_eq: $<%= @input["grid"]["columns"][0][0] %>}}, 
+							_set: {<% @input["grid"]["columns"].each_with_index do |col,index| -%><% if @input["grid"]["columns"][index][0] != @input["grid"]["columns"][0][0] -%><%= @input["grid"]["columns"][index][0] %>: $<%= @input["grid"]["columns"][index][0] %>, <% end -%><% end -%>
 }) {
 								returning {
 									<%= @queryElements %>   
@@ -151,22 +138,45 @@
 							}
 						}`,
 					variables: {
-			<% @columns.each do |col| -%>
-			<%= col %>: <%= col %>,
+			<% @input["grid"]["columns"].each_with_index do |col, index| -%>
+			<%= @input["grid"]["columns"][index][0] %>: this.data.employee.<%= @input["grid"]["columns"][index][0] %>,
 			<% end -%>
 					},
 				})
 			}
-		}
+		},
+
+		<% @input["grid"]["columns"].each_with_index do |col, index| -%>
+		<% if(!@input["grid"]["columns"][index][2].nil?) -%>
+
+		mounted()
+		{
+			this.$apollo.query({
+				query: gql`
+					query {
+						<%= @input["grid"]["tableName"] %> (distinct_on: <%= @input["grid"]["columns"][index][0] %>) {
+							<%= @input["grid"]["columns"][index][0] %>
+						}
+					}`,
+				}).then((response) =>
+					this.dxSelectBoxOptions.dataSource = response.data.<%= @input["grid"]["tableName"] %>.map(value => value.<%= @input["grid"]["columns"][index][0] %>) // update employee
+				)	
+			}
+			<% break %>
+		<% end -%>
+		<% end -%>
+	
 	};
+
+	
+	
 </script>
 
 <style>
-
 html {
-	font-family: calibri;
+	font-family: 'Helvetica Neue','Segoe UI', 'Helvetica', 'Verdana', 'sans-serif';
+	line-height: 1.35715;
 }
-
 </style>
 
 <style scoped>
@@ -177,6 +187,10 @@ html {
 
 #container {
 	overflow: auto;
+}
+
+.customlabel {
+	padding-top: 10px;
 }
 
 button {
