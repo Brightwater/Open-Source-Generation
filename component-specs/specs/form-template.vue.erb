@@ -11,12 +11,12 @@
 				<DxGroupItem
 					css-class="formGroup"
 				>
-					<% @input["grid"]["columns"].each_with_index do |col, index| -%>
+					<% @input["columns"].each_with_index do |col, index| -%>
 <DxSimpleItem
-						data-field="<%= @input["grid"]["columns"][index][0] %>"
-						<% if(!@input["grid"]["columns"][index][2].nil?) -%>editor-type="<%= @input["grid"]["columns"][index][2] %>"
+						data-field="<%= @input["columns"][index][0] %>"
+						<% if(!@input["columns"][index][2].nil?) -%>editor-type="<%= @input["columns"][index][2] %>"
 						v-if="dxSelectBoxOptions.dataSource[0]" != null
-							:editor-options="<%= @input["grid"]["columns"][index][2] %>Options"
+							:editor-options="<%= @input["columns"][index][2] %>Options"
 						<% end -%>/>
 					<% end -%>
 					
@@ -62,16 +62,16 @@
             data: {
                 query: gql`
                     query {
-                        <%= @input["grid"]["tableName"] %> {
+                        <%= @input["tableName"] %> {
                             <%= @queryElements %>
                         }
                     }`,
 
                 update (data) {
-					console.log(data.<%= @input["grid"]["tableName"] %>[0])
+					console.log(data.<%= @input["tableName"] %>[0])
 					
 					return {
-						employee: data.<%= @input["grid"]["tableName"] %>[0],
+						employee: data.<%= @input["tableName"] %>[0],
                     }
                 },
             },
@@ -107,7 +107,7 @@
 					this.$apollo.query({
 						query: gql`
 							query lookup($queryid: Int!) {
-								<%= @input["grid"]["tableName"] %> (where: {<%= @input["grid"]["columns"][0][0] %>: {_eq: $queryid}}) {
+								<%= @input["tableName"] %> (where: {<%= @input["columns"][0][0] %>: {_eq: $queryid}}) {
 									<%= @queryElements %>
 								}
 							}`,
@@ -115,7 +115,7 @@
 							queryid: queryid,
 						},
 					}).then((response) =>
-						this.data.employee = response.data.<%= @input["grid"]["tableName"] %>[0] // update employee
+						this.data.employee = response.data.<%= @input["tableName"] %>[0] // update employee
 					)	
 				}
 			}
@@ -128,9 +128,9 @@
 				// this part will look a bit messy in the template because of graphql formatting
 				this.$apollo.mutate({
 					mutation: gql` 
-						mutation update (<% @input["grid"]["columns"].each_with_index do |col,index| -%>$<%= @input["grid"]["columns"][index][0] %>: <%= @input["grid"]["columns"][index][1] %>, <% end -%>) {
-							update_<%= @input["grid"]["tableName"] %>(where: {<%= @input["grid"]["columns"][0][0] %>: {_eq: $<%= @input["grid"]["columns"][0][0] %>}}, 
-							_set: {<% @input["grid"]["columns"].each_with_index do |col,index| -%><% if @input["grid"]["columns"][index][0] != @input["grid"]["columns"][0][0] -%><%= @input["grid"]["columns"][index][0] %>: $<%= @input["grid"]["columns"][index][0] %>, <% end -%><% end -%>
+						mutation update (<% @input["columns"].each_with_index do |col,index| -%>$<%= @input["columns"][index][0] %>: <%= @input["columns"][index][1] %>, <% end -%>) {
+							update_<%= @input["tableName"] %>(where: {<%= @input["columns"][0][0] %>: {_eq: $<%= @input["columns"][0][0] %>}}, 
+							_set: {<% @input["columns"].each_with_index do |col,index| -%><% if @input["columns"][index][0] != @input["columns"][0][0] -%><%= @input["columns"][index][0] %>: $<%= @input["columns"][index][0] %>, <% end -%><% end -%>
 }) {
 								returning {
 									<%= @queryElements %>   
@@ -138,28 +138,28 @@
 							}
 						}`,
 					variables: {
-			<% @input["grid"]["columns"].each_with_index do |col, index| -%>
-			<%= @input["grid"]["columns"][index][0] %>: this.data.employee.<%= @input["grid"]["columns"][index][0] %>,
+			<% @input["columns"].each_with_index do |col, index| -%>
+			<%= @input["columns"][index][0] %>: this.data.employee.<%= @input["columns"][index][0] %>,
 			<% end -%>
 					},
 				})
 			}
 		},
 
-		<% @input["grid"]["columns"].each_with_index do |col, index| -%>
-		<% if(!@input["grid"]["columns"][index][2].nil?) -%>
+		<% @input["columns"].each_with_index do |col, index| -%>
+		<% if(!@input["columns"][index][2].nil?) -%>
 
 		mounted()
 		{
 			this.$apollo.query({
 				query: gql`
 					query {
-						<%= @input["grid"]["tableName"] %> (distinct_on: <%= @input["grid"]["columns"][index][0] %>) {
-							<%= @input["grid"]["columns"][index][0] %>
+						<%= @input["tableName"] %> (distinct_on: <%= @input["columns"][index][0] %>) {
+							<%= @input["columns"][index][0] %>
 						}
 					}`,
 				}).then((response) =>
-					this.dxSelectBoxOptions.dataSource = response.data.<%= @input["grid"]["tableName"] %>.map(value => value.<%= @input["grid"]["columns"][index][0] %>) // update employee
+					this.dxSelectBoxOptions.dataSource = response.data.<%= @input["tableName"] %>.map(value => value.<%= @input["columns"][index][0] %>) // update employee
 				)	
 			}
 			<% break %>

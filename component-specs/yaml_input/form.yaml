@@ -1,0 +1,11 @@
+# items are case-sensitive with database
+tableName: employee
+# first item listed is assumed to be primary key
+# specify columns like this [column name, data type, editor type] (editor type is optional)
+# [employeeType, String!, dxSelectBox]
+columns:          
+  - [id, Int!]
+  - [name, String!]
+  - [payrate, money!]
+  - [dateHired, date!]
+  - [employeeType, String!, dxSelectBox]

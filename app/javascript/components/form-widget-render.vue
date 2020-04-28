@@ -16,9 +16,6 @@
 						/>
 					<DxSimpleItem
 						data-field="name"
-						editor-type="dxSelectBox"
-						v-if="dxSelectBoxOptions.dataSource[0]" != null
-							:editor-options="dxSelectBoxOptions"
 						/>
 					<DxSimpleItem
 						data-field="description"
@@ -28,9 +25,6 @@
 						/>
 					<DxSimpleItem
 						data-field="notes"
-						editor-type="dxTextArea"
-						v-if="dxSelectBoxOptions.dataSource[0]" != null
-							:editor-options="dxTextAreaOptions"
 						/>
 										
 				</DxGroupItem>
@@ -115,7 +109,7 @@ notes
 		watch: {
 			// wait for mKey to be updated
 			mKey: function () {
-				// don't update unless the parent wants it to
+				// don't update form unless the parent grid wants it to
 				if (this.mKey != 0) {
 					console.log(this.mKey)
 					var data;
@@ -175,21 +169,7 @@ notes
 			}
 		},
 
-								
-		mounted()
-		{
-			this.$apollo.query({
-				query: gql`
-					query {
-						data (distinct_on: name) {
-							name
-						}
-					}`,
-				}).then((response) =>
-					this.dxSelectBoxOptions.dataSource = response.data.data.map(value => value.name) // update employee
-				)	
-			}
-				
+																							
 	};
 
 	
